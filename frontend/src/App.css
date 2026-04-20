@@ -1,0 +1,6 @@
+/* Cleared to avoid conflicts with unified global.css */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
