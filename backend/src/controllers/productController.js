@@ -1,8 +1,24 @@
-const { Product } = require('../models');
+const { Product, ProductType, Category, ProductImage } = require('../models');
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      include: [
+        {
+          model: ProductType,
+          as: 'type',
+          include: [{ model: Category, as: 'category' }]
+        },
+        {
+          model: ProductImage,
+          as: 'images'
+        }
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+        [{ model: ProductImage, as: 'images' }, 'isPrimary', 'DESC']
+      ]
+    });
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -9,35 +9,30 @@ const Product = sequelize.define('Product', {
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    index: true
   },
   description: {
     type: DataTypes.TEXT
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  image: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  category: {
-    type: DataTypes.ENUM('ropa', 'varios'),
-    allowNull: false
-  },
-  type: {
-    type: DataTypes.STRING, // e.g., 'Camisa', 'Electronica'
-    allowNull: true
+    allowNull: false,
+    index: true
   },
   attributes: {
-    type: DataTypes.JSONB, // for sizes ['S','M','L'], colors ['red','blue'], etc.
+    type: DataTypes.JSONB, // for sizes, colors, etc.
     allowNull: true
   },
   stock: {
     type: DataTypes.INTEGER,
     defaultValue: 0
   }
+}, {
+  indexes: [
+    { fields: ['name'] },
+    { fields: ['price'] }
+  ]
 });
 
 module.exports = Product;

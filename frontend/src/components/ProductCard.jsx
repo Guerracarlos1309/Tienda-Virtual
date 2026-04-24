@@ -9,8 +9,12 @@ const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(product.attributes?.sizes?.[0] || '');
   const [selectedColor, setSelectedColor] = useState(product.attributes?.colors?.[0] || '');
 
+  // Extract primary image or fallback
+  const primaryImage = product.images?.find(img => img.isPrimary)?.url || product.images?.[0]?.url;
+  const isClothing = product.type?.category?.name === 'Moda';
+
   const handleAddToCart = () => {
-    const attributes = product.category === 'ropa' ? { size: selectedSize, color: selectedColor } : {};
+    const attributes = isClothing ? { size: selectedSize, color: selectedColor } : {};
     addToCart(product, quantity, attributes);
     setQuantity(1);
   };
@@ -18,7 +22,7 @@ const ProductCard = ({ product }) => {
   return (
     <div className="product-card glass animate-up">
       <div className="product-image">
-        <img src={product.image} alt={product.name} />
+        <img src={primaryImage} alt={product.name} />
       </div>
       
       <div className="product-info">
@@ -26,7 +30,7 @@ const ProductCard = ({ product }) => {
         <p className="price">${product.price}</p>
         <p className="description">{product.description}</p>
 
-        {product.category === 'ropa' && (
+        {isClothing && (
           <div className="attributes">
             <div className="attr-group">
               <label>Talla:</label>

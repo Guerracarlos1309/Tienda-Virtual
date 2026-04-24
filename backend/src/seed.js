@@ -3,63 +3,62 @@ const { User, Product, sequelize } = require('./models');
 
 const seed = async () => {
   try {
+    const { Category, ProductType, Product, ProductImage, User } = require('./models');
     await sequelize.sync({ force: true });
     console.log('Base de datos reseteada para seeding');
 
-    // Create Admin
+    // 1. Create Admin
     await User.create({
       username: 'admin',
       email: 'admin@tienda.com',
-      password: 'admin123', // Will be hashed by model hook
+      password: 'admin123',
       role: 'admin'
     });
-    console.log('Admin creado: admin / admin123');
 
-    // Create Products - Clothing
-    await Product.bulkCreate([
-      {
-        name: 'Camiseta Premium',
-        description: 'Algodón 100% orgánico, corte moderno.',
-        price: 25.99,
-        category: 'ropa',
-        type: 'Camiseta',
-        attributes: { sizes: ['S', 'M', 'L', 'XL'], colors: ['Negro', 'Blanco', 'Gris'] },
-        stock: 50,
-        image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800'
-      },
-      {
-        name: 'Jeans Slim Fit',
-        description: 'Diseño clásico con un toque moderno.',
-        price: 45.50,
-        category: 'ropa',
-        type: 'Pantalón',
-        attributes: { sizes: ['30', '32', '34', '36'], colors: ['Azul', 'Negro'] },
-        stock: 30,
-        image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=800'
-      },
-      {
-        name: 'Reloj Elegante',
-        description: 'Resistente al agua, cristal de zafiro.',
-        price: 120.00,
-        category: 'varios',
-        type: 'Accesorio',
-        attributes: { material: 'Acero Inoxidable' },
-        stock: 15,
-        image: 'https://images.unsplash.com/photo-1524592091214-8ca296cae367?auto=format&fit=crop&q=80&w=800'
-      },
-      {
-        name: 'Mochila Urbana',
-        description: 'Espacio para laptop de 15 pulgadas.',
-        price: 60.00,
-        category: 'varios',
-        type: 'Equipaje',
-        attributes: { capacidad: '20L' },
-        stock: 20,
-        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800'
-      }
+    // 2. Create Categories
+    const catModa = await Category.create({ name: 'Moda', slug: 'moda', description: 'Ropa y calzado de última tendencia' });
+    const catAccesorios = await Category.create({ name: 'Accesorios', slug: 'accesorios', description: 'Complementos y artículos varios' });
+
+    // 3. Create Product Types
+    const typeCamisetas = await ProductType.create({ name: 'Camisetas', categoryId: catModa.id });
+    const typeJeans = await ProductType.create({ name: 'Pantalones', categoryId: catModa.id });
+    const typeRelojes = await ProductType.create({ name: 'Relojes', categoryId: catAccesorios.id });
+    const typeMochilas = await ProductType.create({ name: 'Mochilas', categoryId: catAccesorios.id });
+
+    // 4. Create Products and Images
+    const p1 = await Product.create({
+      name: 'Camiseta Premium Azul',
+      description: 'Algodón 100% orgánico, corte moderno y extra suave.',
+      price: 25.99,
+      productTypeId: typeCamisetas.id,
+      stock: 50,
+      attributes: { sizes: ['S', 'M', 'L'], colors: ['Azul', 'Gris'] }
+    });
+    await ProductImage.bulkCreate([
+      { url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800', isPrimary: true, productId: p1.id },
+      { url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800', isPrimary: false, productId: p1.id }
     ]);
-    console.log('Productos iniciales creados');
 
+    const p2 = await Product.create({
+      name: 'Jeans Slim Fit Dark',
+      description: 'Diseño clásico con un toque moderno y duradero.',
+      price: 45.50,
+      productTypeId: typeJeans.id,
+      stock: 30,
+      attributes: { sizes: ['30', '32', '34'], colors: ['Azul Marino', 'Negro'] }
+    });
+    await ProductImage.create({ url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=800', isPrimary: true, productId: p2.id });
+
+    const p3 = await Product.create({
+      name: 'Reloj Chrono Silver',
+      description: 'Resistente al agua, cristal de zafiro y correa de acero.',
+      price: 120.00,
+      productTypeId: typeRelojes.id,
+      stock: 15
+    });
+    await ProductImage.create({ url: 'https://images.unsplash.com/photo-1524592091214-8ca296cae367?auto=format&fit=crop&q=80&w=800', isPrimary: true, productId: p3.id });
+
+    console.log('Seeding jerárquico completado con éxito');
     process.exit(0);
   } catch (error) {
     console.error('Error durante el seeding:', error);
