@@ -21,9 +21,24 @@ export const CartProvider = ({ children }) => {
 
       if (existingItemIndex > -1) {
         const newCart = [...prev];
-        newCart[existingItemIndex].quantity += quantity;
+        const newQuantity = newCart[existingItemIndex].quantity + quantity;
+        
+        // Stock validation
+        if (newQuantity > product.stock) {
+          alert(`No puedes agregar más de ${product.stock} unidades de este producto.`);
+          return prev;
+        }
+
+        newCart[existingItemIndex].quantity = newQuantity;
         return newCart;
       }
+
+      // Initial validation for new item
+      if (quantity > product.stock) {
+        alert(`No puedes agregar más de ${product.stock} unidades de este producto.`);
+        return prev;
+      }
+
       return [...prev, { ...product, quantity, selectedAttributes: attributes }];
     });
   };

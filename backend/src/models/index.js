@@ -9,8 +9,8 @@ const { DataTypes } = require('sequelize');
 
 const Invoice = sequelize.define('Invoice', {
   id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true
   },
   invoiceNumber: {

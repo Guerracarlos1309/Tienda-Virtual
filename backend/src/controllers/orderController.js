@@ -3,13 +3,15 @@ const { Order, OrderItem, Product, Invoice, sequelize } = require('../models');
 const checkout = async (req, res) => {
   const t = await sequelize.transaction();
   try {
-    const { customerName, customerEmail, items } = req.body;
+    const { customerName, customerEmail, phone, address, items } = req.body;
     let total = 0;
 
     // Create Order
     const order = await Order.create({
       customerName,
       customerEmail,
+      phone,
+      address,
       total: 0 // Will update later
     }, { transaction: t });
 
@@ -19,6 +21,12 @@ const checkout = async (req, res) => {
       
       const subtotal = product.price * item.quantity;
       total += subtotal;
+
+      // Update Stock
+      if (product.stock < item.quantity) {
+        throw new Error(`Stock insuficiente para ${product.name}`);
+      }
+      await product.update({ stock: product.stock - item.quantity }, { transaction: t });
 
       await OrderItem.create({
         OrderId: order.id,
@@ -32,7 +40,7 @@ const checkout = async (req, res) => {
     await order.update({ total }, { transaction: t });
 
     // Generate Invoice
-    const invoiceNumber = `INV-${Date.now()}`;
+    const invoiceNumber = `INV-${order.id.toString().padStart(5, '0')}`;
     await Invoice.create({
       OrderId: order.id,
       invoiceNumber,
@@ -75,8 +83,23 @@ const getInvoices = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const order = await Order.findByPk(id);
+    if (!order) return res.status(404).json({ message: 'Pedido no encontrado' });
+    
+    await order.update({ status });
+    res.status(200).json({ message: 'Estado actualizado', order });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   checkout,
   getOrders,
-  getInvoices
+  getInvoices,
+  updateStatus
 };

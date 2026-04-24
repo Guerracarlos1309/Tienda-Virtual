@@ -3,8 +3,8 @@ const sequelize = require('../config/database');
 
 const Order = sequelize.define('Order', {
   id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true
   },
   customerName: {
@@ -13,6 +13,12 @@ const Order = sequelize.define('Order', {
   },
   customerEmail: {
     type: DataTypes.STRING
+  },
+  phone: {
+    type: DataTypes.STRING
+  },
+  address: {
+    type: DataTypes.TEXT
   },
   total: {
     type: DataTypes.DECIMAL(10, 2),

@@ -60,6 +60,11 @@ body {
   padding-right: 5%;
 }
 
+.main-content {
+  padding-top: 120px;
+  min-height: 80vh;
+}
+
 .glass {
   background: var(--glass);
   backdrop-filter: blur(12px);

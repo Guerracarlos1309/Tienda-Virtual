@@ -1,5 +1,4 @@
 .home-page {
-  padding-top: 120px; /* Offset for Header + TopBar */
   background-color: var(--background);
 }
 

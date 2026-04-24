@@ -20,6 +20,14 @@ const Category = sequelize.define("Category", {
   description: {
     type: DataTypes.TEXT,
   },
+}, {
+  hooks: {
+    beforeValidate: (category) => {
+      if (category.name) {
+        category.slug = category.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+      }
+    }
+  }
 });
 
 module.exports = Category;

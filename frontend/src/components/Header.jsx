@@ -1,29 +1,41 @@
+import React, { useEffect, useState } from "react";
 import {
   ShoppingCart,
   Store,
-  Menu,
   User,
-  Phone,
-  Mail,
-  Camera,
-  Users,
-  Share2,
   Sun,
   Moon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import axios from "axios";
+import logo from "../assets/logo.png";
 import "../styles/Header.css";
 
 const Header = ({ onCartClick, onAdminClick, theme, onThemeToggle }) => {
   const { cartCount } = useCart();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/categories');
+        if (Array.isArray(res.data)) {
+          setCategories(res.data.slice(0, 4));
+        }
+      } catch (err) {
+        console.error("Error loading categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   return (
     <div className="header-wrapper">
       <header className="header glass sticky">
         <div className="header-container full-width">
           <Link to="/" className="logo">
-            <Store size={32} color="var(--primary)" />
+            <img src={logo} alt="Logo" className="logo-img" />
             <div className="logo-text">
               <span className="brand-name">
                 TIENDA <span className="blue-text">VIRTUAL</span>
@@ -33,12 +45,11 @@ const Header = ({ onCartClick, onAdminClick, theme, onThemeToggle }) => {
           </Link>
 
           <nav className="nav">
-            <Link to="/#ropa">Moda</Link>
-            <Link to="/#varios">Accesorios</Link>
-            <Link to="/#ofertas" className="hot-link">
-              Ofertas
-            </Link>
-            <Link to="/sobre-nosotros">Sobre Nosotros</Link>
+            <Link to="/">Inicio</Link>
+            {categories.map(cat => (
+              <Link key={cat.id} to={`/categoria/${cat.slug}`}>{cat.name}</Link>
+            ))}
+            <Link to="/sobre-nosotros">Nosotros</Link>
           </nav>
 
           <div className="actions">

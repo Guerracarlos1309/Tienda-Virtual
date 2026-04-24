@@ -8,6 +8,7 @@ import HelpCenter from "./pages/HelpCenter";
 import TermsOfUse from "./pages/TermsOfUse";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import AboutUs from "./pages/AboutUs";
+import CategoryProducts from "./pages/CategoryProducts";
 import "./styles/global.css";
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
               <Route path="terminos" element={<TermsOfUse />} />
               <Route path="envios" element={<ShippingPolicy />} />
               <Route path="sobre-nosotros" element={<AboutUs />} />
+              <Route path="categoria/:slug" element={<CategoryProducts />} />
             </Route>
 
             {/* Admin Route - Independent Layout */}

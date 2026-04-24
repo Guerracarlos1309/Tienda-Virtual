@@ -5,7 +5,7 @@ import '../styles/ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(product.stock > 0 ? 1 : 0);
   const [selectedSize, setSelectedSize] = useState(product.attributes?.sizes?.[0] || '');
   const [selectedColor, setSelectedColor] = useState(product.attributes?.colors?.[0] || '');
 
@@ -15,8 +15,15 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = () => {
     const attributes = isClothing ? { size: selectedSize, color: selectedColor } : {};
+    
+    // Safety check just in case
+    if (product.stock <= 0) {
+      alert('Producto agotado');
+      return;
+    }
+
     addToCart(product, quantity, attributes);
-    setQuantity(1);
+    setQuantity(product.stock > 0 ? 1 : 0);
   };
 
   return (
@@ -27,7 +34,16 @@ const ProductCard = ({ product }) => {
       
       <div className="product-info">
         <h3>{product.name}</h3>
-        <p className="price">${product.price}</p>
+        <div className="price-stock">
+          <p className="price">${product.price}</p>
+          {product.stock <= 0 ? (
+            <span className="stock-badge out">Agotado</span>
+          ) : product.stock <= 5 ? (
+            <span className="stock-badge low">¡Últimas {product.stock} unidades!</span>
+          ) : (
+            <span className="stock-badge in">{product.stock} disponibles</span>
+          )}
+        </div>
         <p className="description">{product.description}</p>
 
         {isClothing && (
@@ -57,13 +73,27 @@ const ProductCard = ({ product }) => {
 
         <div className="card-footer">
           <div className="quantity-control">
-            <button onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus size={16} /></button>
+            <button 
+              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              disabled={product.stock <= 0}
+            >
+              <Minus size={16} />
+            </button>
             <span>{quantity}</span>
-            <button onClick={() => setQuantity(q => q + 1)}><Plus size={16} /></button>
+            <button 
+              onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
+              disabled={product.stock <= 0 || quantity >= product.stock}
+            >
+              <Plus size={16} />
+            </button>
           </div>
-          <button className="add-btn" onClick={handleAddToCart}>
+          <button 
+            className="add-btn" 
+            onClick={handleAddToCart}
+            disabled={product.stock <= 0}
+          >
             <ShoppingCart size={20} />
-            Agregar
+            {product.stock <= 0 ? 'Agotado' : 'Agregar'}
           </button>
         </div>
       </div>

@@ -56,12 +56,30 @@
   color: white;
 }
 
+.price-stock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
 .price {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--primary);
-  margin-bottom: 0.8rem;
 }
+
+.stock-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.stock-badge.in { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+.stock-badge.low { background: rgba(255, 107, 107, 0.1); color: #ff6b6b; }
+.stock-badge.out { background: var(--border); color: var(--text-dim); }
 
 .description {
   font-size: 0.8rem;
@@ -151,6 +169,12 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: opacity 0.2s;
+}
+
+.quantity-control button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .quantity-control span {

@@ -68,6 +68,13 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
 }
 
 .logo-text {
